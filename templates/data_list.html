@@ -4,6 +4,6 @@
 {% block content %}
 {{ super() }}
 <table>
-{{ tables.render(data) }}
+{{ tables.render(data) }}  {# data是迭代器类型 #}
 </table>
 {% endblock content %}

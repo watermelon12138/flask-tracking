@@ -1,5 +1,4 @@
 from os.path import abspath, dirname, join
-
 from flask import flash, Flask, Markup, redirect, render_template, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
@@ -11,11 +10,11 @@ _cwd = dirname(abspath(__file__))
 SECRET_KEY = 'flask-session-insecure-secret-key'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + join(_cwd, 'flask-tracking.db')
 SQLALCHEMY_ECHO = True
-WTF_CSRF_SECRET_KEY = 'this-should-be-more-random'
+WTF_CSRF_SECRET_KEY = 'this-should-be-more-random'  # 用于生成安全令牌的随机数据。如果未设置，则使用SECRET_KEY
 
 
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object(__name__)  # flask从本模块加载配置，配置名必须英文大写
 
 db = SQLAlchemy(app)
 
@@ -28,7 +27,7 @@ class Site(db.Model):
     visits = db.relationship('Visit', backref='tracking_site', lazy='select')
 
     def __repr__(self):
-        return '<Site %r>' % (self.base_url)
+        return '<Site %r>' % self.base_url
 
     def __str__(self):
         return self.base_url
@@ -55,7 +54,7 @@ class VisitForm(Form):
     event = fields.StringField()
     url = fields.StringField()
     ip_address = fields.StringField("IP Address")
-    site = QuerySelectField(query_factory=Site.query.all)
+    site = QuerySelectField(query_factory=Site.query.all)  # 实时查询数据库并显示
 
 
 class SiteForm(Form):
@@ -76,10 +75,10 @@ def add_site():
     form = SiteForm()
     if form.validate_on_submit():
         site = Site()
-        form.populate_obj(site)
-        db.session.add(site)
+        form.populate_obj(site)  # 将表单中fields的值去填充site的fields的值，field的名称必须对应
+        db.session.add(site)  # 将该表添加到数据库中
         db.session.commit()
-        flash("Added site")
+        flash("Added site")  # 消息闪现
         return redirect(url_for("index"))
     return render_template("validation_error.html", form=form)
 
@@ -101,9 +100,15 @@ def add_visit():
 @app.route("/sites")
 def view_sites():
     query = Site.query.filter(Site.id >= 0)
-    data = query_to_list(query)
+    data = query_to_list(query)  # data是迭代器
+    # try:
+    #     for row in data:
+    #         print('row: \n', row)
+    # except StopIteration:
+    #     pass
     data = [next(data)] + [[_make_link(cell) if i == 0 else cell for i, cell in enumerate(row)] for row in data]
-    return render_template("data_list.html", data=data, type="Sites")
+    # print('data: \n', data)  [[id, base_url], [超链接1，网址],[超链接2，网址], [超链接3，网址]]
+    return render_template("data_list.html", data=iter(data), type="Sites")
 
 
 _LINK = Markup('<a href="{url}">{name}</a>')
@@ -117,18 +122,25 @@ def _make_link(site_id):
 @app.route("/site/<int:site_id>")
 def view_site_visits(site_id=None):
     site = Site.query.get_or_404(site_id)
-    query = Visit.query.filter(Visit.site_id == site_id)
-    data = query_to_list(query)
+    query = Visit.query.filter(Visit.site_id == site_id)  # query此时是BaseQuery类对象，加上all()才有结果
+    # print('query: \n', type(query))
+    # print('query.all: \n', query.all())
+    data = query_to_list(query)  # 生成器返回的是一个迭代器
+    # print('data: \n', data)
     title = "visits for " + site.base_url
     return render_template("data_list.html", data=data, type=title)
 
 
-def query_to_list(query, include_field_names=True):
+def query_to_list(query, include_field_names=True):  # 生成器
     """Turns a SQLAlchemy query into a list of data values."""
     column_names = []
     for i, obj in enumerate(query.all()):
+        # print('%d:' % i)
+        # print(obj)
+        # print(type(obj))
         if i == 0:
             column_names = [c.name for c in obj.__table__.columns]
+            # print('column_names:\n', column_names)
             if include_field_names:
                 yield column_names
         yield obj_to_list(obj, column_names)

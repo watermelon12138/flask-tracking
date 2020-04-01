@@ -1,13 +1,11 @@
 {% macro render(data, headers=true) %}
-{% for row in data %}
-    {% set is_header_row = headers and loop.index == 1 %}
-    {{ render_header(row) if is_header_row }}
-    {% if (not headers and loop.index == 1) or (headers and loop.index == 2) %}
-    <tbody>
+{% for row in data %}  {# data是迭代器 #}
+    {% if loop.first %}
+    {{ render_header(row) }}
+    {% else %}
+    {{ render_row(row) }}
     {% endif %}
-    {{ render_row(row) if not is_header_row }}
 {% endfor %}
-</tbody>
 {% endmacro %}
 
 {% macro render_row(row) %}

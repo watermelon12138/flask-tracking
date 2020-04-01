@@ -5,5 +5,5 @@
 <dd>{{ field }}</dd>
 {% endfor %}
 </dl>
-{{ form.hidden_tag() }}
+{{ form.hidden_tag() }}  {#自定义表单一定要加上{{ form.hidden_tag() }}，否则会提交不成功。这一行代码实质上是添加了一个csrf_token,这是一个随机生成的token，用来防范黑客攻击。#}
 {% endmacro %}
