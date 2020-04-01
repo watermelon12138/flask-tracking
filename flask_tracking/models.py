@@ -10,10 +10,10 @@ class Site(db.Model):
     base_url = db.Column(db.String)
     visits = db.relationship('Visit', backref='tracking_site', lazy='select')
 
-    def __repr__(self):
+    def __repr__(self):  # 直接输出该类的对象时只会调用repr
         return '<Site {:d} {}>'.format(self.id, self.base_url)
 
-    def __str__(self):
+    def __str__(self):  # print时先调用str，如果没有str再调用repr
         return self.base_url
 
 

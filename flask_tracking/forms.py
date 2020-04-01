@@ -15,4 +15,5 @@ class VisitForm(Form):
     event = fields.StringField()
     url = fields.StringField()
     ip_address = fields.StringField("IP Address")
-    site = QuerySelectField(query_factory=lambda: Site.query.all())
+    site = QuerySelectField(query_factory=lambda: Site.query.all())  # lambda是一个函数，
+    # 确保VisitForm实例化时才执行查询语句，以为此时Site表还没建立
