@@ -13,9 +13,8 @@ app.config.from_object('config')
 def provide_constants():
     return {"constants": {"TUTORIAL_PART": 2}}
 
-db.init_app(app)
-
-login_manager.init_app(app)
+db.init_app(app)  #
+login_manager.init_app(app)  # 先初始化，然后再使用app中跟其有关的配置
 
 app.register_blueprint(tracking)
 app.register_blueprint(users)

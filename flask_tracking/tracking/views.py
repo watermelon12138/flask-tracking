@@ -62,7 +62,7 @@ def add_visit(site_id=None):
         # (204 is "Your request succeeded; I have nothing else to say.")
         return '', 204
 
-    return jsonify(errors=form.errors), 400
+    return jsonify(errors=form.errors), 400     # 返回一个json格式的响应
 
 
 @tracking.route("/sites", methods=("GET", "POST"))
@@ -71,12 +71,15 @@ def view_sites():
     form = SiteForm()
 
     if form.validate_on_submit():
-        Site.create(owner=current_user, **form.data)
+        Site.create(owner=current_user, **form.data)  # 这里owner是Site和User建立的relationship，在这里赋值后面要用的时候就不用查询了
         flash("Added site")
         return redirect(url_for(".view_sites"))
+    # 删除重定向后，浏览器将询问您是否真的要再次提交表单数据
+    # 浏览器提出的最后一个请求是创建新站点的POST。 通过重定向，
+    # 浏览器最后发出的请求是重新加载view_sites页面的GET请求。
 
     query = Site.query.filter(Site.user_id == current_user.id)
-    data = query_to_list(query)
+    data = query_to_list(query)  # 用户只能查询到自己的visit
     results = []
 
     try:

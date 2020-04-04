@@ -5,9 +5,12 @@ class Site(CRUDMixin, db.Model):
     __tablename__ = 'tracking_site'
 
     base_url = db.Column(db.String)
-    visits = db.relationship('Visit', backref='site', lazy='select')
     user_id = db.Column(db.Integer, db.ForeignKey('users_user.id'))
-
+    visits = db.relationship('Visit', backref='site', lazy='select')
+    # visits = db.relationship('Visit', backref=db.backref('site', lazy='select'), lazy='select')
+    # lazy='select'时，使用Site.visits和Visit.site会得到相应的查询结果，lazy的默认值就是select
+    # lazy='dynamic'时，使用SiteSite.visits和Visit.site会得到查询语句的对象(BaseQueryObject)
+    # lazy='dynamic只适用1对多或者多对多的关系中，而且必须写在1的那一侧
     def __repr__(self):
         return '<Site {:d} {}>'.format(self.id, self.base_url)
 
@@ -15,9 +18,8 @@ class Site(CRUDMixin, db.Model):
         return self.base_url
 
 
-class Visit(CRUDMixin, db.Model):
+class Visit(CRUDMixin, db.Model):  # 一个Site对象可以对应多个Visit对象
     __tablename__ = 'tracking_visit'
-
     browser = db.Column(db.String)
     date = db.Column(db.DateTime)
     event = db.Column(db.String)

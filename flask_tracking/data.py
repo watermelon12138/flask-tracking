@@ -3,20 +3,23 @@ from flask.ext.sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
-class CRUDMixin(object):
-    __table_args__ = {'extend_existing': True}
-
+class CRUDMixin(object):  # 实现数据的增删改查(Create,Re,Update,Delete)简称CRUD
+    __table_args__ = {'extend_existing': True}  # Table.extend_existing或Table.keep_existing
+    # 这两个表参数必须指定其一，在创建表时，extend_existing=True表示如果表已经存在则覆盖，返回新表
+    # keep_existing=True表示如果表存在则返回旧表，不覆盖
     id = db.Column(db.Integer, primary_key=True)
 
     @classmethod
-    def create(cls, commit=True, **kwargs):
-        instance = cls(**kwargs)
-        return instance.save(commit=commit)
+    def create(cls, commit=True, **kwargs):  # User继承了CRUDMixin，所以该类方法也是User中的类方法
+        instance = cls(**kwargs)  # User或者User的实例调用create()方法时，cls表示的都是User类本身
+        return instance.save(commit=commit)  #  所以上条语句等于: instance = User(**kwargs), 创建了一个User的实例
 
     @classmethod
     def get(cls, id):
         return cls.query.get(id)
 
+    # We will also proxy Flask-SqlAlchemy's get_or_44
+    # for symmetry
     @classmethod
     def get_or_404(cls, id):
         return cls.query.get_or_404(id)
