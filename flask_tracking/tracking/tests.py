@@ -22,7 +22,6 @@ class TrackingViewsTests(BaseTestCase):
             'latitude': '34.05',
             'longitude': '-118.25'
         }
-
         url = url_for('tracking.add_visit', site_id=site.id)
         wsgi_environment = {'REMOTE_ADDR': '1.2.3.4'}
         headers = Headers([('Referer', '/some/url')])

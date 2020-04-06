@@ -9,12 +9,12 @@ class UserViewsTests(BaseTestCase):
     def test_users_can_login(self):
         User.create(name="Joe", email="joe@joes.com", password="12345")
 
-        with self.client:  #
+        with self.client:  # self.client = self.app.test_client()
             response = self.client.post(url_for("users.login"),
                                         data={"email": "joe@joes.com",
                                               "password": "12345"})
 
-            self.assert_redirects(response, url_for("tracking.index"))
+            self.assert_redirects(response, url_for("tracking.index"))  # 判断重定向的位置是否一致
             self.assertTrue(current_user.name == "Joe")
             self.assertFalse(current_user.is_anonymous())
 
@@ -38,8 +38,8 @@ class UserViewsTests(BaseTestCase):
                                               "password": "*****"})
 
             self.assertTrue(current_user.is_anonymous())
-            self.assert_200(response)
-            self.assertIn("Invalid password", response.data)
+            self.assert_200(response)  # 验证response.status_code是否为200
+            self.assertIn("Invalid password", response.data)  # response.data中是否有'Invalid password'
 
     def test_user_can_register_account(self):
         with self.client:
@@ -53,7 +53,7 @@ class UserViewsTests(BaseTestCase):
 
     def test_user_is_redirected_to_index_from_logout(self):
         with self.client:
+            #  有点问题哦
             response = self.client.get(url_for("users.logout"))
-
             self.assert_redirects(response, url_for("tracking.index"))
             self.assertTrue(current_user.is_anonymous())

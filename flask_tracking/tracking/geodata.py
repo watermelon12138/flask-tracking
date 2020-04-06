@@ -1,6 +1,6 @@
 from json import loads
 from re import compile, VERBOSE
-from urllib import urlopen
+from urllib.request import urlopen
 
 FREE_GEOIP_URL = "http://freegeoip.net/json/{}"
 VALID_IP = compile(r"""
