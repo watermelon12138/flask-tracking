@@ -17,11 +17,11 @@ class TestConfiguration(BaseConfiguration):
     WTF_CSRF_ENABLED = False
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # + join(_cwd, 'testing.db')
-
+    # 把SQLite放到内存中，this way for running test quickly
     # Since we want our unit tests to run quickly
     # we turn this down - the hashing is still done
     # but the time-consuming part is left out.
-    HASH_ROUNDS = 1
+    HASH_ROUNDS = 1  # how many times a user’s password should be hashed before it is stored.
 
 
 class DebugConfiguration(BaseConfiguration):

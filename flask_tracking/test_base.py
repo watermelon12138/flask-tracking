@@ -10,9 +10,9 @@ class BaseTestCase(TestCase):
         app.config.from_object('config.TestConfiguration')
         return app
 
-    def setUp(self):
+    def setUp(self):  # 每个测试开始前自动执行
         db.create_all()
 
-    def tearDown(self):
+    def tearDown(self):  # 每个测试结束后自动执行
         db.session.remove()
         db.drop_all()
