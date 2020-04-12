@@ -19,10 +19,10 @@ class ContextualFilter(Filter):
 def init_app(app, remove_existing_handlers=False):
     # Create the filter and add it to the base application logger
     context_provider = ContextualFilter()
-    app.logger.addFilter(context_provider)
+    app.logger.addFilter(context_provider)  # 将日志需要输出的信息都定义在filter()中
 
     # Optionally, remove Flask's default debug handler
-    if remove_existing_handlers:
+    if remove_existing_handlers:  # 移除logger的处理器，为新建处理器做准备
         del app.logger.handlers[:]
 
     # Create a new handler for log messages
@@ -31,15 +31,17 @@ def init_app(app, remove_existing_handlers=False):
 
     # Add a formatter that makes use of our new contextual information
     log_format = ("%(asctime)s\t%(levelname)s\t%(user_id)s\t"
-                  "%(ip)s\t%(method)s\t%(url)s\t%(message)s")
+                  "%(ip)s\t%(method)s\t%(url)s\t%(message)s")  # 其中asctime(访问时间)由系统生成，
+                                                               # levelname和message在生成日志时指定
     formatter = Formatter(log_format)
     handler.setFormatter(formatter)
 
     # Finally, attach the handler to our logger
-    app.logger.addHandler(handler)
+    app.logger.addHandler(handler)  # 控制日志记录格式
 
     # Only set up a file handler if we know where to put the logs
-    if app.config.get("ERROR_LOG_PATH"):
+    if app.config.get("ERROR_LOG_PATH"):  # 如果config配置文件中有配置“ERROR_LOG_PATH”(错误路径日志)，
+                                          # 就把ERROR级别的日志以特定的格式保存到这个路径下的文件中。
 
         # Create one file for each day. Delete logs over 7 days old.
         file_handler = TimedRotatingFileHandler(app.config["ERROR_LOG_PATH"],
@@ -61,5 +63,5 @@ def init_app(app, remove_existing_handlers=False):
         # Filter out all log messages that are lower than Error.
         file_handler.setLevel(ERROR)
 
-        file_handler.addFormatter(file_formatter)
+        file_handler.setFormatter(file_formatter)
         app.logger.addHandler(file_handler)

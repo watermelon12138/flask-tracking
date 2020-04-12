@@ -39,7 +39,7 @@ class UserViewsTests(BaseTestCase):
 
             self.assertTrue(current_user.is_anonymous())
             self.assert_200(response)  # 验证response.status_code是否为200
-            self.assertIn("Invalid password", response.data)  # response.data中是否有'Invalid password'
+            self.assertIn(b"Invalid password", response.data)  # response.data中是否有'Invalid password', 需要字节类型哦
 
     def test_user_can_register_account(self):
         with self.client:

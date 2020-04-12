@@ -6,14 +6,24 @@ import flask_tracking.errors as errors
 import flask_tracking.logs as logs
 from .tracking.views import tracking
 from .users.views import users
+from flask import request
 
 app = Flask(__name__)
 app.config.from_object('config.BaseConfiguration')
-
+# app.config.from_object('config.DebugConfiguration')
 
 @app.context_processor
 def provide_constants():
     return {"constants": {"TUTORIAL_PART": 3}}
+
+@app.before_request
+def log_entry():  # 每次访问前都生成一条log
+    msg = {
+        'url': request.path,
+        'method': request.method,
+        'ip': request.environ.get("REMOTE_ADDR")
+    }
+    app.logger.debug(msg)
 
 # Setup extensions
 db.init_app(app)

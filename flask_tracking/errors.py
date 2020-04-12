@@ -21,7 +21,7 @@ def error_handler(error):
     # for errors where we can provide the user some additional help.
     # (Like a 404, for example).
     templates_to_try = ['errors/{}.html'.format(code), 'errors/generic.html']
-    return render_template(templates_to_try,
+    return render_template(templates_to_try,  # 第一个存在的模板将会被渲染
                            code=code,
                            name=Markup(name),
                            description=Markup(description),

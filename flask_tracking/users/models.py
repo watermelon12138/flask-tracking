@@ -29,7 +29,7 @@ class User(UserMixin, CRUDMixin, db.Model):
     def password(self, value):
         # When a user is first created, give them a salt
         if self._salt is None:
-            self._salt = bytes(SystemRandom().getrandbits(128))
+            self._salt = str(SystemRandom().getrandbits(128))
         self._password = self._hash_password(value)
 
     def is_valid_password(self, password):
@@ -45,8 +45,8 @@ class User(UserMixin, CRUDMixin, db.Model):
         return compare_digest(new_hash, self._password)
 
     def _hash_password(self, password):
-        pwd = password.encode("utf-8")
-        salt = bytes(self._salt)
+        pwd = bytes(password.encode("utf-8"))
+        salt = bytes(self._salt.encode('utf-8'))
         rounds = current_app.config.get("HASH_ROUNDS", 100000)
         buff = pbkdf2_hmac("sha512", pwd, salt, iterations=rounds)
         return bytes(buff)

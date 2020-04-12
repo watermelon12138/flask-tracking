@@ -11,6 +11,7 @@ from ..tracking import views
 
 
 class TrackingViewsTests(BaseTestCase):
+
     def test_visitors_location_is_derived_from_ip(self):
         user = User.create(name='Joe', email='joe@joe.com', password='12345')
         site = Site.create(user_id=user.id)
@@ -33,7 +34,7 @@ class TrackingViewsTests(BaseTestCase):
 
                 visits = Visit.query.all()
 
-                mock_geodata.assert_called_once_with('1.2.3.4')
+                mock_geodata.assert_called_once_with('1.2.3.4')  # 验证'1.2.3.4'是否调用了一次mock
                 self.assertEqual(1, len(visits))
 
                 first_visit = visits[0]
